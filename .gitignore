@@ -1,0 +1,8 @@
+# Ignores Santiago
+
+.vscode/*
+solvePermissions.sh
+.picowgo
+
+
+# Ignores Joao
