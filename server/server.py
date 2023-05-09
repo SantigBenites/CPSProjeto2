@@ -31,7 +31,7 @@ def client_program():
         while True:
             clientSocket = connectionSocket.accept()[0]
             data = clientSocket.recv(1024).decode()  # receive response
-            print('Received from client: ' + data)  # show in terminal
+            print('Received from pico: ' + data)  # show in terminal
             time.sleep(1)
             clientSocket.close()
 
