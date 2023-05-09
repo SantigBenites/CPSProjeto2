@@ -16,6 +16,4 @@ while True:
         currentTemperature = ds_sensor.read_temp(rom)
         now = utime.gmtime()
         print(f"{now[3:6]} : {currentTemperature}")
-
-    
     time.sleep(1.5)
