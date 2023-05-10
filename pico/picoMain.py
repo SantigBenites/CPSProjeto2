@@ -1,7 +1,8 @@
 import _thread
 from picoClient import picoConnectionMainLoop
-from temperatureControl import updateTemperature
+from temperatureControl import picoControlMainLoop
 from machine import Pin, PWM
+from utils import *
 import network, socket, machine, onewire, ds18x20, time, utime
 
 # Constants
@@ -13,9 +14,14 @@ output_port = 4444
 box_sensor_pin = 15 #GPIO number!
 ambient_sensor_pin = 22
 
-buffer = []
+# Connect pico to WLAN
+picoIP = connect(ssid, password)
+print("Waiting for PC connections")
+
+# Inter-Thread communication buffer
+bufferCurrentTemp = []
 
 print("Thread Started")
-_thread.start_new_thread(updateTemperature, (buffer,))
+_thread.start_new_thread(picoControlMainLoop, (picoIP,input_port, box_sensor_pin, bufferCurrentTemp))
 
-picoConnectionMainLoop(buffer, server_ip, input_port, output_port, ssid, password, box_sensor_pin, ambient_sensor_pin)
+picoConnectionMainLoop(picoIP, output_port, ambient_sensor_pin, box_sensor_pin, bufferCurrentTemp)
