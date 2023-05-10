@@ -1,4 +1,4 @@
-import socket, time
+import socket, time, random
 
 ssid = 'best_virus'
 password = 'qwertyuiop'
@@ -26,14 +26,25 @@ def client_program():
     connectionSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     connectionSocket.bind(address)
     connectionSocket.listen(1)
+    lastTime = time.time()
+    clientSocket = connectionSocket.accept()[0]
     
     try:
         while True:
-            clientSocket = connectionSocket.accept()[0]
-            data = clientSocket.recv(1024).decode()  # receive response
-            print('Received from pico: ' + data)  # show in terminal
-            time.sleep(1)
-            clientSocket.close()
+            
+            if time.time()  - lastTime > 5:
+                lastTime = time.time()
+                newTemp = random.randrange(20,25)
+                print(f"Updating temp to {newTemp}")
+                clientSocket.send(str(newTemp).encode('utf8'))
+
+            try:
+                data = clientSocket.recv(1024).decode()  # receive response
+                print('Received from client: ' + data)  # show in terminal
+                time.sleep(1)
+            except Exception:
+                pass
+            
 
     except KeyboardInterrupt:
 
