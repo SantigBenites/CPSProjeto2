@@ -1,7 +1,7 @@
 import socket, time, random
 
-ssid = 'best_virus'
-password = 'qwertyuiop'
+ssid = 'virus'
+password = 'joao1234'
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,7 +28,8 @@ def client_program():
     connectionSocket.listen(1)
     lastTime = time.time()
     clientSocket = connectionSocket.accept()[0]
-    
+    clientSocket.setblocking(False)
+
     try:
         while True:
             
