@@ -34,7 +34,7 @@ def client_program():
             
             if time.time()  - lastTime > 5:
                 lastTime = time.time()
-                newTemp = random.randrange(20,25)
+                newTemp = random.randrange(20,30)
                 print(f"Updating temp to {newTemp}")
                 clientSocket.send(str(newTemp).encode('utf8'))
 

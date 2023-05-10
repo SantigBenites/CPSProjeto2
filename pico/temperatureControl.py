@@ -2,11 +2,11 @@ from machine import Pin, PWM
 
 def updateTemperature(buffer):
 
-    warmPin = PWM(Pin(15))
+    #warmPin = PWM(Pin(15))
     coldPin = PWM(Pin(15))
 
     print("Updating temperature")
-    warmPin.freq(1000)
+    #warmPin.freq(1000)
     coldPin.freq(1000)
 
     while True:
@@ -20,5 +20,5 @@ def updateTemperature(buffer):
                 coldPin.duty_u16(65025)
             else:
                 print("Getting warmer")
-                warmPin.duty_u16(65025)
+                coldPin.duty_u16(0)
             
