@@ -14,11 +14,10 @@ def updateTemperature(buffer):
         if len(buffer) != 0:
 
             (newTemp,currentTemp) = buffer.pop()
-            print(f"We are at {currentTemp} and we want to go to {newTemp}")
             if newTemp > currentTemp:
-                print("Getting colder")
+                print(f"We are at {currentTemp} and we want to go to {newTemp} getting colder")
                 coldPin.duty_u16(65025)
             else:
-                print("Getting warmer")
+                print(f"We are at {currentTemp} and we want to go to {newTemp} getting warmer")
                 coldPin.duty_u16(0)
             

@@ -13,13 +13,19 @@ def get_ip():
     return IP
 
 def connect_to_remote_socket(ip:str,port:int):
-
-    # Open a socket
-    address = (ip, port)
-    connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection.connect(address)
-    connection.setblocking(False)
-    return connection
+    newSocket = ""
+    while newSocket == "":
+        try:
+            # Open a socket
+            address = (ip, port)
+            connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            connection.connect(address)
+            connection.setblocking(False)
+            return connection
+        except Exception:
+            pass
+        
+    return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 def server_main_loop():
@@ -30,6 +36,7 @@ def server_main_loop():
     # Connect to input
     inputSocket = connect_to_remote_socket(picoIP,picoInputSocket)
 
+
     # Connect to Output
     outputSocket = connect_to_remote_socket(picoIP,picoOutputSocket)
 
@@ -37,7 +44,7 @@ def server_main_loop():
     try:
         while True:
             
-            if time.time()  - lastTime > 5:
+            if time.time()  - lastTime > 10:
                 lastTime = time.time()
                 newTemp = random.randrange(20,30)
                 print(f"Updating temp to {newTemp}")

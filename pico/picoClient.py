@@ -61,7 +61,7 @@ def loop(input_connection, output_connection, buffer, box_sensor, box_roms, ambi
 
     # Send to control center
     if newExpectedValue != '':
-        print(f"new temperature of {newExpectedValue}")
+        #print(f"new temperature of {newExpectedValue}")
         buffer.append((newExpectedValue, ambient_temp))
     
     # Prepare return data
