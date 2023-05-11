@@ -4,6 +4,7 @@ from utils import *
 def updateTemperature(currentTemp: int, newTemp: int, pin: Pin):
 
     #warmPin = PWM(Pin(15))
+    # WHY ARE WE CREATING A PIN EVERYTIME?
     coldPin = PWM(pin)
 
     print("Updating temperature")
@@ -19,8 +20,6 @@ def updateTemperature(currentTemp: int, newTemp: int, pin: Pin):
             
 
 def loop(input_connection:socket.socket, controlPin: Pin, buffer):
-
-
     while True:
 
         # Receive new expected value
@@ -30,14 +29,15 @@ def loop(input_connection:socket.socket, controlPin: Pin, buffer):
             print("[Connection]:", f"Recieved new set-point: {newExpectedValue}")
             if newExpectedValue != "":
                 (ambient_temp, box_temp) = buffer[-1]
-                updateTemperature(ambient_temp,newExpectedValue,controlPin)
+                #! no sleep ? insert megamind meme
+                updateTemperature(ambient_temp, newExpectedValue, controlPin)
         except Exception:
             pass
 
-def picoControlMainLoop(    picoIP:str,
-                            input_port: int,
-                            ambient_sensor_pin: int,
-                            buffer:tuple[int,int]):
+def picoControlMainLoop(picoIP:str,
+                        input_port: int,
+                        ambient_sensor_pin: int,
+                        buffer: list):
 
     # Start and setup input socket
     input_connection = open_socket(picoIP, input_port) # input requires pico IP
