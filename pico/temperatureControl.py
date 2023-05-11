@@ -46,7 +46,7 @@ def loop(input_connection: socket.socket,
             print("[CONNECTION]:", f"Recieved new set-point: {new_set_point}")
             if new_set_point != "":
                 (ambient_temp, box_temp) = buffer[-1]
-                update_temperature(ambient_temp, new_set_point, fan_pwm, fan_pid, res_pwm, res_pid, debug)
+                update_temperature(ambient_temp, box_temp, new_set_point, fan_pwm, res_pwm, fan_pid, res_pid, debug)
                 sleep(control_time)
         except Exception:
             pass
