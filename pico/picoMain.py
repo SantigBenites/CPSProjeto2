@@ -19,6 +19,7 @@ ambient_sensor_pin = 22
 # PIN, FREQ, P, I, D
 fan_def = Control_Tuple(0, 10000, 1, 1, 1)
 res_def = Control_Tuple(0, 100000, 1, 1, 1)
+control_time = 3
 
 # Connect pico to WLAN
 picoIP = connect(ssid, password)
@@ -27,8 +28,18 @@ print("Waiting for PC connections")
 # Inter-Thread communication buffer
 bufferCurrentTemp = []
 
+
+"""
+(pico_ip: str,
+                        input_port: int,
+                        fan_def: Control_Tuple,
+                        res_def: Control_Tuple,
+                        control_time: int,
+                        buffer: list,
+                        debug: bool)
+"""
 print("Thread Started")
-_thread.start_new_thread(picoControlMainLoop, (picoIP, input_port, box_sensor_pin, bufferCurrentTemp))
+_thread.start_new_thread(picoControlMainLoop, (picoIP, input_port, fan_def, res_def, control_time, bufferCurrentTemp, True))
 
 picoConnectionMainLoop(picoIP, output_port, ambient_sensor_pin, box_sensor_pin, bufferCurrentTemp)
 
