@@ -25,3 +25,4 @@ print("Thread Started")
 _thread.start_new_thread(picoControlMainLoop, (picoIP,input_port, box_sensor_pin, bufferCurrentTemp))
 
 picoConnectionMainLoop(picoIP, output_port, ambient_sensor_pin, box_sensor_pin, bufferCurrentTemp)
+
