@@ -34,7 +34,8 @@ def loop(output_connection:socket.socket, ambient_sensor, ambient_roms,box_senso
 
     # Prepare return data
     now = utime.gmtime()
-    output_connection.send(f"{now[3:6]} : {ambient_temp}".encode())
+    currentTime = f"{now[3]}:{now[4]}:{now[5]}"
+    output_connection.send(f"{currentTime} , {ambient_temp} \n".encode())
 
     
 
