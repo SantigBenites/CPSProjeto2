@@ -10,7 +10,7 @@ class PID:
 
     cond = {
         'fan': lambda v: v < 0,
-        'resistor': lambda v: v > 0
+        'res': lambda v: v > 0
     }
 
     # name MUST be either fan or resistor
@@ -49,6 +49,7 @@ class PID:
         if self.debug:
             print(f'[DEBUG]: {self.name} PID controller')
             print(f'    time_delta -> {time_delta}')
+            print(f'    last_error -> {self.last_error}')
             print(f'    current_error -> {current_error}')
             print(f'    last_time -> {self.last_time}')
             print(f'    new_time  -> {new_time}')
@@ -62,19 +63,22 @@ class PID:
         # derivate
         d_val = self.Kd * ((current_error - self.last_error) / time_delta)
 
+
         # update:
         self.last_error = current_error
         self.last_time = new_time
 
         duty = p_val + i_val + d_val
+        result = clamp(abs(duty), 0, 65535) if self.cond[self.name](duty) else 0
         
         if self.debug:
             print(f'    p_val -> {p_val}')
             print(f'    i_val -> {i_val}')
             print(f'    d_val -> {d_val}')
             print(f'    duty  -> {duty}')
-
-        return clamp(abs(duty), 0, 65535) if self.cond[self.name](duty) else 0
+            print(f'    res   -> {result}')
+        
+        return result *100
     
     def __integral(self, error, dt):
         # Calculate the integral using the rectangle approximation

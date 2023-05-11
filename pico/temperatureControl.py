@@ -20,12 +20,16 @@ def picoControlMainLoop(pico_ip: str,
     # Set PWM pins for the fan and the resistor:
     fan_pwm = PWM(Pin(fan_def.pin))
     fan_pwm.freq(fan_def.freq)
+    
     res_pwm = PWM(Pin(res_def.pin))
     res_pwm.freq(res_def.freq)
 
     fan_pid = PID('fan', fan_def.p, fan_def.i, fan_def.d, 0, 100, True)
-    res_pid = PID('fan', res_def.p, res_def.i, res_def.d, 0, 100, True)
-
+    res_pid = PID('res', res_def.p, res_def.i, res_def.d, 0, 100, True)
+    
+    sleep(2)
+    if debug:
+        print('[DEBUG]:', 'Starting Control Main Loop...')
     # Main loop
     loop(input_connection, fan_pwm, res_pwm, fan_pid, res_pid, control_time, buffer, debug)
 
@@ -38,19 +42,30 @@ def loop(input_connection: socket.socket,
          control_time: int,
          buffer,
          debug: bool):
+    
+    set_point = 0
+    chunk = 0
+    
     while True:
-        # Receive new expected value
-        new_set_point = ''
+        # Try to recieve the new set_point, if there is none, use the last set_point
         try:
-            new_set_point = int(input_connection.recv(1024))
-            print("[CONNECTION]:", f"Recieved new set-point: {new_set_point}")
-            if new_set_point != "":
-                (ambient_temp, box_temp) = buffer[-1]
-                update_temperature(ambient_temp, box_temp, new_set_point, fan_pwm, res_pwm, fan_pid, res_pid, debug)
-                sleep(control_time)
-        except Exception:
-            pass
-
+            chunk = input_connection.recv(1024)
+            if chunk == b'':
+                raise RuntimeError("socket connection broken")
+            else:
+                set_point = int(chunk)
+                print("[CONNECTION]:", f"Recieved new set-point: {set_point}")
+        except Exception as e:
+            print(e)
+        
+        if len(buffer) > 0:
+            (ambient_temp, box_temp) = buffer[-1]
+        else:
+            (ambient_temp, box_temp) = (0,0)
+        if debug: print('[DEBUG]:', f'will try to match box_temp -> {box_temp}, ambient_temp -> {ambient_temp} to set_point {set_point}')      
+        
+        update_temperature(ambient_temp, box_temp, set_point, fan_pwm, res_pwm, fan_pid, res_pid, debug)
+        sleep(control_time)
 
 def update_temperature(ambient_temp: float,
                       box_temp: float,
@@ -61,8 +76,13 @@ def update_temperature(ambient_temp: float,
                       res_pid: PID,
                       debug: bool):
 
-    if debug:
-        print('[DEBUG]:', 'Updating Temperature')
+    fan_duty = fan_pid.update(set_point, box_temp)
+    res_duty = res_pid.update(set_point, box_temp)
 
-    fan_pwm.duty_u16(fan_pid.update(set_point, box_temp))
-    res_pwm.duty_u16(res_pid.update(set_point, box_temp))
+    if debug:
+        print('[DEBUG]:', 'Updating Duty')
+        print(f'    fan_duty -> {fan_duty}')
+        print(f'    res_duty -> {res_duty}')
+
+    fan_pwm.duty_u16(int(fan_duty))
+    res_pwm.duty_u16(int(res_duty))

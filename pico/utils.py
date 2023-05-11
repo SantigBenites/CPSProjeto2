@@ -29,7 +29,7 @@ def open_socket(ip, port):
     input_socket.bind(address)
     input_socket.listen(1)
     connection = input_socket.accept()[0]
-    return
+    return connection
 
 
 def clamp(value, min, max):

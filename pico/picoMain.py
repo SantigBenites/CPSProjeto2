@@ -13,12 +13,12 @@ password = 'qwertyuiop'
 server_ip = '192.168.185.108'
 input_port = 5555
 output_port = 4444
-box_sensor_pin = 15 #GPIO number!
-ambient_sensor_pin = 22
+box_sensor_pin = 20 #GPIO number!
+ambient_sensor_pin = 18
 
 # PIN, FREQ, P, I, D
-fan_def = Control_Tuple(0, 10000, 1, 1, 1)
-res_def = Control_Tuple(0, 100000, 1, 1, 1)
+fan_def = Control_Tuple(15, 10000, 1, 1, 1)
+res_def = Control_Tuple(16, 100000, 1, 1, 1)
 control_time = 3
 
 # Connect pico to WLAN

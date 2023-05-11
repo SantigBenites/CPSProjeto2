@@ -45,7 +45,7 @@ def picoConnectionMainLoop( picoIP:str,
                             box_sensor_pin,
                             buffer):
     
-    box_sensor, box_roms = 1,1 #get_temp_sensor(box_sensor_pin)
+    box_sensor, box_roms = get_temp_sensor(box_sensor_pin)
     ambient_sensor, ambient_roms = get_temp_sensor(ambient_sensor_pin)
     
     try:
