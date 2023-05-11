@@ -1,11 +1,12 @@
-"""
-PID class that implements the function:
-
-duty(t) = K_p * e(t) + K_i * ∫ e(t) dt + K_d * (de(t)/dt)
-"""
 from time import time
+from utils import clamp
 
 class PID:
+    """
+    PID class that implements the function:
+
+    duty(t) = K_p * e(t) + K_i * ∫ e(t) dt + K_d * (de(t)/dt)
+    """
 
     cond = {
         'fan': lambda v: v < 0,
@@ -73,7 +74,7 @@ class PID:
             print(f'    d_val -> {d_val}')
             print(f'    duty  -> {duty}')
 
-        return abs(duty) if self.cond[self.name](duty) else 0
+        return clamp(abs(duty), 0, 65535) if self.cond[self.name](duty) else 0
     
     def __integral(self, error, dt):
         # Calculate the integral using the rectangle approximation

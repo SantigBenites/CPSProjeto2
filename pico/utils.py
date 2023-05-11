@@ -1,8 +1,13 @@
 import socket, network, time
 
+from collections import namedtuple
+
+Control_Tuple = namedtuple("Control_Tuple", ["pin", "freq", "p", "i", "d"])
+
+
 def connect(ssid, password):
     print("[INFO]:", "Starting connection")
-    #Connect to WLAN
+    # Connect to WLAN
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
@@ -15,6 +20,7 @@ def connect(ssid, password):
     print("[INFO]:", f'Connected on {ip}')
     return ip
 
+
 def open_socket(ip, port):
     # Open a socket
     address = (ip, port)
@@ -23,4 +29,10 @@ def open_socket(ip, port):
     input_socket.bind(address)
     input_socket.listen(1)
     connection = input_socket.accept()[0]
-    return connection
+    return
+
+
+def clamp(value, min, max):
+    if value > max: return max
+    if value < min: return min
+    return value
