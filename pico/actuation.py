@@ -24,8 +24,8 @@ def picoControlMainLoop(pico_ip: str,
     res_pwm = PWM(Pin(res_def.pin))
     res_pwm.freq(res_def.freq)
 
-    fan_pid = PID('fan', fan_def.p, fan_def.i, fan_def.d, 0, 100, True)
-    res_pid = PID('res', res_def.p, res_def.i, res_def.d, 0, 100, True)
+    fan_pid = PID('fan', fan_def.p, fan_def.i, fan_def.d, fan_def.min, fan_def.max, True)
+    res_pid = PID('res', res_def.p, res_def.i, res_def.d, res_def.min, res_def.max, True)
     
     sleep(2)
     if debug:
@@ -43,7 +43,7 @@ def loop(input_connection: socket.socket,
          buffer,
          debug: bool):
     
-    set_point = 0
+    set_point = 20
     chunk = 0
     
     while True:

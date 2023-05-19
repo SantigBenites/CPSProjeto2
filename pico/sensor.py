@@ -22,27 +22,27 @@ def get_temp(sensor, roms, sensor_type: str):
     print("[INFO]:", f"Reading temperature from {sensor_type} -> {temperature}")
     return temperature
 
-def loop(output_connection:socket.socket, ambient_sensor, ambient_roms,box_sensor, box_roms, buffer):
+def loop(output_connection:socket.socket, ambient_sensor, ambient_roms, box_sensor, box_roms, buffer):
 
     # Obtain data from ambient and box
     #box_temp = get_temp(box_sensor, box_roms, "box")
-    box_temp = random.randint(20,30)
-    ambient_temp = get_temp(ambient_sensor, ambient_roms, "ambient")
+    box_temp = get_temp(box_sensor, box_roms, 'box')
+    ambient_temp = get_temp(ambient_sensor, ambient_roms, 'ambient')
     
     # Update buffer data
-    buffer.append((ambient_temp,box_temp))
+    buffer.append((ambient_temp, box_temp))
 
     # Prepare return data
     now = utime.gmtime()
     currentTime = f"{now[3]}:{now[4]}:{now[5]}"
-    output_connection.send(f"{currentTime} , {ambient_temp} \n".encode())
+    output_connection.send(f"{currentTime} , {box_temp} \n".encode())
 
     
 
 def picoConnectionMainLoop( picoIP:str,
                             output_port: int,
                             ambient_sensor_pin: int,
-                            box_sensor_pin,
+                            box_sensor_pin: int,
                             buffer):
     
     box_sensor, box_roms = get_temp_sensor(box_sensor_pin)

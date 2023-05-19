@@ -14,7 +14,7 @@ class App:
     def __init__(self, master):
 
         # Constants
-        picoIP = "192.168.43.144"
+        picoIP = "192.168.43.179"
         picoInputSocket = 5555
         picoOutputSocket = 4444
 
@@ -36,15 +36,15 @@ class App:
         self.window['background']='#405169'
 
         self.left = tk.Frame(self.window)
+        self.left.pack(fill='both', side='top', expand=True)
         self.left.pack_propagate(0)
-        self.left.pack(fill='both', side='left', expand=True)
 
         self.inputFrame = tk.Frame(self.left)
         self.inputFrame.pack(expand=True)
 
         self.right = tk.Frame(self.window)
+        self.right.pack(fill='both', side='bottom', expand=True)
         self.right.pack_propagate(0)
-        self.right.pack(fill='both', side='right', expand=True)
 
         self.graphFrame = tk.Frame(self.right)
         self.graphFrame.pack(expand=True)
@@ -76,18 +76,17 @@ class App:
         data = self.temperatureData
         
         # Start figure
-        figure = plt.figure(figsize=(6,5), dpi=100)
+        figure = plt.figure(figsize=(16,5), dpi=100)
         self.ax = figure.add_subplot(111)
 
         # Configure x-ticks
         self.ax.set_xticks(data['time']) # Tickmark + label at every plotted point
         self.ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-        self.ax.set_ylabel('Temperature over time')
 
-        self.ax.plot_date(data['time'], data['temperature'], ls='-', marker='o', color = "red", label='current_temperature')
+        self.ax.plot_date(data['time'], data['temperature'], ls='-', marker='', color = "red", label='current_temperature')
         self.ax.grid(True)
 
-        self.ax.plot_date(data['time'], data['expected_temperature'], ls='-', marker='o', color = "blue", label='expect_temperature')
+        self.ax.plot_date(data['time'], data['expected_temperature'], ls='-', marker='', color = "blue", label='expect_temperature')
         self.ax.grid(True)
 
         # Format the x-axis for dates (label formatting, rotation)
@@ -103,10 +102,18 @@ class App:
 
         data = self.temperatureData
 
-        self.ax.plot_date(data['time'], data['temperature'], ls='-', marker='o', color = "red")
+        plt.style.use('ggplot')
+
+
+        self.ax.set_ylabel('Temperature')
+        self.ax.set_xlabel('Time')
+
+
+        self.ax.plot_date(data['time'], data['temperature'], color = "red", ls='-', marker='')
         self.ax.grid(True)
 
-        self.ax.plot_date(data['time'], data['expected_temperature'], ls='-', marker='o', color = "blue")
+
+        self.ax.plot_date(data['time'], data['expected_temperature'], color = "blue", ls='-', marker='')
         self.ax.grid(True)
 
         self.temperatureChart.draw()
@@ -154,7 +161,7 @@ while True:
 
             # Update dataframe
             app.temperatureData["time"].append(x_time)
-            app.temperatureData["temperature"].append(int(x_temperature))
+            app.temperatureData["temperature"].append(float(x_temperature))
             app.temperatureData["expected_temperature"].append(app.currentExpectedTemp)
             app.updateChart()
 

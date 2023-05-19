@@ -30,7 +30,7 @@ def connect_to_remote_socket(ip:str,port:int):
 
 def server_main_loop():
     
-    picoIP = "192.168.108.219"
+    picoIP = "192.168.108.66"
     picoInputSocket = 5555
     picoOutputSocket = 4444
     # Connect to input

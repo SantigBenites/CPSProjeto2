@@ -2,7 +2,7 @@ import socket, network, time
 
 from collections import namedtuple
 
-Control_Tuple = namedtuple("Control_Tuple", ["pin", "freq", "p", "i", "d", "max", "min"])
+Control_Tuple = namedtuple("Control_Tuple", ["pin", "freq", "p", "i", "d", "min", "max"])
 
 
 def connect(ssid, password):

@@ -9,8 +9,8 @@ class PID:
     """
 
     cond = {
-        'fan': lambda v: v < 0,
-        'res': lambda v: v > 0
+        'fan': lambda v: v > 0,
+        'res': lambda v: v < 0
     }
 
     # name MUST be either fan or resistor
