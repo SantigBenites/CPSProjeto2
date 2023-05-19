@@ -1,5 +1,5 @@
 from time import time
-from utils import clamp
+from utils import range_map
 
 class PID:
     """
@@ -37,6 +37,7 @@ class PID:
         # not...
         self.last_error = 0
         self.last_time = time()
+        self.max_value = 5 #This can never be 0
         pass
 
     def update(self, set_point, process_variable):
@@ -48,11 +49,11 @@ class PID:
         
         if self.debug:
             print(f'[DEBUG]: {self.name} PID controller')
+            print(f'    last_time -> {self.last_time}')
+            print(f'    new_time  -> {new_time}')
             print(f'    time_delta -> {time_delta}')
             print(f'    last_error -> {self.last_error}')
             print(f'    current_error -> {current_error}')
-            print(f'    last_time -> {self.last_time}')
-            print(f'    new_time  -> {new_time}')
 
         # proportional
         p_val = self.Kp * current_error 
@@ -63,25 +64,34 @@ class PID:
         # derivate
         d_val = self.Kd * ((current_error - self.last_error) / time_delta)
 
+        pid_value = p_val + i_val + d_val
 
         # update:
         self.last_error = current_error
         self.last_time = new_time
+        if pid_value > self.max_value:
+            self.max_value = pid_value
 
-        duty = p_val + i_val + d_val
-        result = clamp(abs(duty), 0, 65535) if self.cond[self.name](duty) else 0
+        # finish early if the pid is not supposed to do anything
+        if self.cond[self.name](pid_value):
+            print(f'    pid_value  -> {pid_value}')
+            print(f'    actuation  -> {0}')
+            return 0
+
+        duty = range_map(abs(pid_value), 0, self.max_value, self.min, self.max)
         
         if self.debug:
             print(f'    p_val -> {p_val}')
             print(f'    i_val -> {i_val}')
             print(f'    d_val -> {d_val}')
-            print(f'    duty  -> {duty}')
-            print(f'    res   -> {result}')
-        
-        return result *100
+            print(f'    pid_value  -> {pid_value}')
+            print(f'    res   -> {duty}')
+
+        return duty
     
     def __integral(self, error, dt):
-        # Calculate the integral using the rectangle approximation
+        # Calculate the integral using rectangle approximation
+        # and a roling window of size self.integral_number 
     
         if len(self.integral_values) >= self.integral_number:
             del self.integral_values[0]

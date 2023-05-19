@@ -1,7 +1,7 @@
 from machine import Pin, PWM
 from time import sleep
 from utils import *
-from pid import PID
+from ctrl import PID
 
 
 def picoControlMainLoop(pico_ip: str,

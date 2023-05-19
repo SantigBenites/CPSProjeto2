@@ -2,7 +2,7 @@ import socket, network, time
 
 from collections import namedtuple
 
-Control_Tuple = namedtuple("Control_Tuple", ["pin", "freq", "p", "i", "d"])
+Control_Tuple = namedtuple("Control_Tuple", ["pin", "freq", "p", "i", "d", "max", "min"])
 
 
 def connect(ssid, password):
@@ -36,3 +36,23 @@ def clamp(value, min, max):
     if value > max: return max
     if value < min: return min
     return value
+
+
+def range_map(value, left_min, left_max, right_min, right_max):
+    """
+    This maps a value in a range [left_min, left_max] to [right_min, right_max]
+
+    :param value:
+    :param left_min:
+    :param left_max:
+    :param right_min:
+    :param right_max:
+    :return:
+    """
+    left_span = left_max - left_min
+    right_span = right_max - right_min
+
+    scale_factor = float(value - left_min) / float(left_span)
+
+    return right_min + (scale_factor * right_span)
+    pass

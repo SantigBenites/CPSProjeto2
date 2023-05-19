@@ -1,4 +1,4 @@
-from pid import PID
+from ctrl import PID
 from time import sleep, time
 from machine import Pin, PWM
 
