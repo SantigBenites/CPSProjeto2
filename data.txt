@@ -1,0 +1,1 @@
+{"time": [], "temperature": [], "expected_temperature": []}

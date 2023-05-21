@@ -27,6 +27,7 @@ class App:
         # Temperature Data
         self.temperatureData = {'time': [],
          'temperature': [],
+         'ambient_temperature': [],
          'expected_temperature' : []
         }
 
@@ -51,6 +52,43 @@ class App:
 
         self.currentExpectedTemp = 0
 
+        self.StartUpdateButtonEntry()
+        self.StartShowTemperature()
+        self.StartTemperatureGraph()
+
+    def update_loop(self, buffer):
+            
+        try:
+
+            # Update text
+            
+            temperatureList = buffer[-2].split("\n")[:-1]
+            if len(temperatureList) > 0:
+                currentTimeTemperature = temperatureList[-1]
+                time_string = currentTimeTemperature.split(" , ")[0]
+                temperature_string = currentTimeTemperature.split(" , ")[1]
+                ambient_temp_string = currentTimeTemperature.split(" , ")[2]
+                self.temp_label[ "text" ]=f"At time {time_string} temperature is {temperature_string} \n Trying to go to {self.currentExpectedTemp} \n Ambient temperature is {ambient_temp_string}"
+
+                # Update dataFrame
+
+                # Time
+                x_time = mdates.date2num(datetime.strptime(time_string,"%H:%M:%S"))
+
+                # Temperature
+                x_temperature = float(temperature_string)
+                x_ambient_temperature = float(ambient_temp_string)
+
+                # Update dataframe
+                self.temperatureData["time"].append(x_time)
+                self.temperatureData["temperature"].append(float(x_temperature))
+                self.temperatureData["ambient_temperature"].append(float(x_ambient_temperature))
+                self.temperatureData["expected_temperature"].append(self.currentExpectedTemp)
+                self.updateChart()
+                print("updating")
+
+        except Exception:
+            pass
 
     def StartUpdateButtonEntry(self):
 
@@ -68,7 +106,7 @@ class App:
 
     def StartShowTemperature(self):
 
-        self.temp_label = tk.Label(self.inputFrame, text="Starting...", width=80, height=2, fg="green", font=('arial', 13)) 
+        self.temp_label = tk.Label(self.inputFrame, text="Starting...", width=100, height=5, fg="green", font=('arial', 13)) 
         self.temp_label.pack()
 
     def StartTemperatureGraph(self):
@@ -83,10 +121,13 @@ class App:
         self.ax.set_xticks(data['time']) # Tickmark + label at every plotted point
         self.ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 
-        self.ax.plot_date(data['time'], data['temperature'], ls='-', marker='', color = "red", label='current_temperature')
+        self.ax.plot_date(data['time'], data['temperature'], color = "red", label='current_temperature')
         self.ax.grid(True)
 
-        self.ax.plot_date(data['time'], data['expected_temperature'], ls='-', marker='', color = "blue", label='expect_temperature')
+        self.ax.plot_date(data['time'], data['expected_temperature'], color = "blue", label='expect_temperature')
+        self.ax.grid(True)
+
+        self.ax.plot_date(data['time'], data['ambient_temperature'], color = "green", label='ambient_temperature')
         self.ax.grid(True)
 
         # Format the x-axis for dates (label formatting, rotation)
@@ -109,11 +150,13 @@ class App:
         self.ax.set_xlabel('Time')
 
 
-        self.ax.plot_date(data['time'], data['temperature'], color = "red", ls='-', marker='')
+        self.ax.plot_date(data['time'], data['temperature'], fmt="b", ls='-', marker=None)
         self.ax.grid(True)
 
+        self.ax.plot_date(data['time'], data['expected_temperature'], fmt="r", ls='-', marker=None)
+        self.ax.grid(True)
 
-        self.ax.plot_date(data['time'], data['expected_temperature'], color = "blue", ls='-', marker='')
+        self.ax.plot_date(data['time'], data['ambient_temperature'], fmt="g", ls='-', marker=None)
         self.ax.grid(True)
 
         self.temperatureChart.draw()
@@ -124,50 +167,12 @@ root = tk.Tk()
 
 app = App(root)
 
-app.StartUpdateButtonEntry()
-
-app.StartShowTemperature()
-
-app.StartTemperatureGraph()
-
 buffer:list[str] = []
+temperatureThread = threading.Thread(target=getTemperature, args=(app.outputSocket,buffer))
+temperatureThread.start()
 
-x = threading.Thread(target=getTemperature, args=(app.outputSocket,buffer))
-x.start()
-lastime = time.time()
 
 while True:
-    #time.sleep(2)
     
-    # Print latest temperature
-    if time.time() - lastime > 2:
-        lastime = time.time()
-        try:
-            
-            # Update text
-            temperatureList = buffer[-2].split("\n")[:-1]
-            currentTimeTemperature = temperatureList[-1]
-            time_string = currentTimeTemperature.split(" , ")[0]
-            temperature_string = currentTimeTemperature.split(" , ")[1]
-            app.temp_label[ "text" ]=f"At time {time_string} temperature is {temperature_string} \n Trying to go to {app.currentExpectedTemp}"
-
-            # Update dataFrame
-
-            # Time
-            x_time = mdates.date2num(datetime.strptime(time_string,"%H:%M:%S"))
-
-            # Temperature
-            x_temperature = float(temperature_string)
-
-            # Update dataframe
-            app.temperatureData["time"].append(x_time)
-            app.temperatureData["temperature"].append(float(x_temperature))
-            app.temperatureData["expected_temperature"].append(app.currentExpectedTemp)
-            app.updateChart()
-
-        except Exception:
-            pass
-
+    app.update_loop(buffer)
     root.update()
-
-root.mainloop()

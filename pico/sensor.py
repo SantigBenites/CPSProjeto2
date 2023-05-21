@@ -35,7 +35,8 @@ def loop(output_connection:socket.socket, ambient_sensor, ambient_roms, box_sens
     # Prepare return data
     now = utime.gmtime()
     currentTime = f"{now[3]}:{now[4]}:{now[5]}"
-    output_connection.send(f"{currentTime} , {box_temp} \n".encode())
+    output_connection.send(f"{currentTime} , {box_temp} , {ambient_temp} \n".encode())
+    print("[INFO]:", f"Sending to client {currentTime} , {box_temp} ")
 
     
 
@@ -67,7 +68,8 @@ def picoConnectionMainLoop( picoIP:str,
                          box_sensor,
                          box_roms,
                          buffer)
-                except Exception:
-                    output_connection.close()  
+                except Exception as err:
+                    print(err)
+
     except KeyboardInterrupt:
         machine.reset()

@@ -21,6 +21,7 @@ def connect_to_remote_socket(ip:str,port:int):
             connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             connection.connect(address)
             connection.setblocking(False)
+            connection.settimeout(None)
             return connection
         except Exception:
             pass

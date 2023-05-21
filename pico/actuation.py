@@ -59,13 +59,18 @@ def loop(input_connection: socket.socket,
             print(e)
         
         if len(buffer) > 0:
-            (ambient_temp, box_temp) = buffer[-1]
+            (ambient_temp, box_temp) = buffer.pop()
         else:
             (ambient_temp, box_temp) = (0,0)
         if debug: print('[DEBUG]:', f'will try to match box_temp -> {box_temp}, ambient_temp -> {ambient_temp} to set_point {set_point}')      
         
         update_temperature(ambient_temp, box_temp, set_point, fan_pwm, res_pwm, fan_pid, res_pid, debug)
         sleep(control_time)
+
+        if(len(buffer) > 10):
+            print('[DEBUG]:', f"buffer is going to be cleared {buffer}")  
+            buffer.clear()
+            print('[DEBUG]:', f"buffer was cleared {buffer}")  
 
 def update_temperature(ambient_temp: float,
                       box_temp: float,
